@@ -36,6 +36,16 @@ def select_model(args, device):
         model_path = os.path.join('model_zoo', 'team00_dat.pth')
         model = DAT()
         model.load_state_dict(torch.load(model_path), strict=True)
+    elif model_id == 13:
+        from models.team13_liteSwinIRplus import SwinIR
+        name, data_range = f"{model_id:02}_DAT_baseline", 1.0
+        model = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+                img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
+                mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+        param_key_g = 'params'
+        model_path = os.path.join('model_zoo', 'model_zoo/team13_liteSwinIRplus.pth')
+        pretrained_model = torch.load(model_path)
+        model.load_state_dict(pretrained_model[param_key_g] if param_key_g in pretrained_model.keys() else pretrained_model, strict=True)
     else:
         raise NotImplementedError(f"Model {model_id} is not implemented.")
 
